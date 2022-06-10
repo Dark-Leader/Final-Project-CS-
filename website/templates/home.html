@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Note Recognition</title>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/home.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <h1 class="headline">Welcome to Note Recognition - The app that teaches you how to play the piano</h1>
+    <hr>
+    <h3 class="user-message">In order to start learning, Please upload an image of a melody you wish to learn.</h3>
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                <form id="upload_form" action="/upload_file" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" value="No File Selected.">
+        <button type="submit">Submit</button>
+    </form>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

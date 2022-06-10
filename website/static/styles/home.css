@@ -1,0 +1,47 @@
+
+.headline {
+    line-height: 1.5em;
+    color: black;
+    text-align: center;
+    color: black;
+}
+
+hr {
+    color: solid gray;
+    height: 5px;
+    background-color: black;
+}
+
+.user-message {
+    color: black;
+    text-align: center;
+}
+
+body {
+    font-size: 25px;
+    background-color: lightblue;
+}
+
+.outer {
+    display: table;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.middle {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.inner {
+    border: 15px solid blue;
+    padding: 50px;
+    margin: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 300px;
+    /* Whatever width you want */
+}
