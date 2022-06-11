@@ -409,9 +409,6 @@ def calculate_note(center, clef, spacing, staffs):
 """ helper function to create all the music note audio files from 2nd octave to 6th """
 def make_audio_files(output_folder):
     note_to_pitch = {}
-    dir_path = "../sounds"
-    if not os.path.exists(dir_path):
-        os.mkdir(dir_path)
     for speed in [0.25, 0.5, 1, 2, 4]:
         pitch = 95
         for octave in range(6, 1, -1):
