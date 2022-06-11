@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, send_from_directory, request, redi
 from werkzeug.utils import secure_filename
 import os
 
-from website import ALLOWED_EXTENSIONS
+from website import ALLOWED_EXTENSIONS, coordinator
 
 views = Blueprint("views", __name__)
 
@@ -38,6 +38,12 @@ def upload_file():
             filename = secure_filename(file.filename)
             print(filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            #
+            #
+
+            coordinator.process_image(filename, app.config['UPLOAD_FOLDER'], app.config['OUTPUT_FOLDER'])
+
             #
             # the coordinator did some work on the image
             #

@@ -246,9 +246,11 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             continue
         if prediction in ["sol_clef", "fa_clef"]:
             clef = prediction
+            centers.append((x, y, prediction))
             continue
         if prediction in ["4-4", "3-4", "2-4"]:
             time_modifier = prediction
+            centers.append((x, y, prediction))
             continue
         if prediction == "dot":
             if last_note:
@@ -257,8 +259,6 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
         if prediction == "barline":
             continue
         if prediction == "rest":
-
-            real_center_x, real_center_y = center_x + x, center_y + y
             min_dist = float("inf")
             idx = -1
             for j, staff in enumerate(staffs):
@@ -281,6 +281,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
                 time_step += duration
                 last_note = note
                 notes.append(note)
+            centers.append((x, y, name))
             continue
         if prediction == "rest_eighth":
             circles = get_note_locations(img, note_radius)
@@ -293,6 +294,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             note = Note(duration, prediction, -1, time_step)
             last_note = note
             notes.append(note)
+            centers.append((x,y, prediction))
             continue
         if prediction == "rest_quarter":
             circles = get_note_locations(img, note_radius)
@@ -305,6 +307,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             note = Note(duration, prediction, -1, time_step)
             last_note = note
             notes.append(note)
+            centers.append((x,y, prediction))
             continue
         if prediction == "rest_sixteenth":
             circles = get_note_locations(img, note_radius)
@@ -317,6 +320,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             note = Note(duration, prediction, -1, time_step)
             last_note = note
             notes.append(note)
+            centers.append((x, y, prediction))
             continue
         if prediction == "whole":
             img = fill_ellipse(img)
@@ -338,6 +342,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
                 time_step += duration
                 last_note = note
                 notes.append(note)
+                centers.append((cur_real_x - int(radius), cur_real_y, name))
             elif i > 0:
                 time_step = dotted_note(last_note, time_step)
 
