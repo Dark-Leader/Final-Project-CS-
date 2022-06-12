@@ -24,7 +24,7 @@ class Segmenter:
         queue = deque()
         visited = set()
         max_error = max(x[1] - x[0] for x in self.thickness) * 2.5
-        print(max_error)
+        #print(max_error)
         offset = 2
         for row in range(rows):
             for col in range(cols):

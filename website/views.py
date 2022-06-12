@@ -41,13 +41,17 @@ def upload_file():
 
             #
             #
-
-            coordinator.process_image(filename, app.config['UPLOAD_FOLDER'], app.config['OUTPUT_FOLDER'])
-
+            success = True
+            try:
+                coordinator.process_image(filename, app.config['UPLOAD_FOLDER'], app.config['OUTPUT_FOLDER'])
+            except Exception as e:
+                success = False
             #
             # the coordinator did some work on the image
             #
-            messages = json.dumps({'status': 'True'})
+            if not success:
+                return redirect("/")
+            messages = json.dumps({'status': 'True', 'filename': filename})
             session['messages'] = messages
             return redirect("/piano")
 
@@ -61,13 +65,16 @@ def allowed_file(file_name):
 
 @views.route("/piano", methods=["GET", "POST"])
 def piano():
-    print("inside piano")
-    print(request.method)
     if request.method == "GET":
         if 'messages' not in session:
             return redirect("/")
         messages = json.loads(session['messages'])
-        if 'status' not in messages or not messages['status']:
+        if 'status' not in messages or not messages['status'] or 'filename' not in messages:
             return redirect("/")
-        return render_template("piano.html")
+        filename = messages['filename']
+        print(filename)
+        file_name_no_ext = filename.split('.')[0]
+        full_name = f"{file_name_no_ext}_predictions.png"
+        print(full_name)
+        return render_template("piano.html", file_name=full_name)
 

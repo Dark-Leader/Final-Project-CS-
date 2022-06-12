@@ -175,7 +175,7 @@ def get_closest_split(staffs, boxes: List[BoundingBox], staff_centers) -> List[L
     arrays = [[] for _ in range(num_staffs // 5)]
     n = len(staff_centers)
     block_centers = staff_centers[2:n:5]
-    print(block_centers)
+    #print(block_centers)
     for box in boxes:
         center = box.center
         x, y = center

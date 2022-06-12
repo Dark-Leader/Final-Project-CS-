@@ -24,9 +24,9 @@ def main():
                 new_file_path = f"{parent_dir}/{output}/{folder}/{i+1}.png"
                 cv2.imwrite(new_file_path, scaled_image)
             except:
-                print(f"Error: file path = {path}")
+                #print(f"Error: file path = {path}")
                 pass
-    print(count)
+    #print(count)
 
 
 if __name__ == '__main__':

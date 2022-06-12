@@ -8,8 +8,8 @@ from algorithm.Coordinator import Coordinator
 
 TEMPLATE_FOLDER = "templates/"
 UPLOAD_FOLDER = "data"
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-OUTPUT_FOLDER = "output"
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+OUTPUT_FOLDER = "website/static/output"
 
 
 def create_app():

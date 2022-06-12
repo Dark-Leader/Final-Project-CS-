@@ -78,8 +78,8 @@ def zoom_in(img: np.ndarray):
     rows = list(range(start_good_row, end_good_row))
     cols = list(range(start_good_col, end_good_col))
 
-    print(start_good_row, end_good_row)
-    print(start_good_col, end_good_col)
+    #(start_good_row, end_good_row)
+    #print(start_good_col, end_good_col)
     to_select = np.ix_(rows, cols)
     new_img = img[to_select]
     return new_img

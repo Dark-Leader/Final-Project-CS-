@@ -18,6 +18,7 @@ body {
 
 .piano {
     display: flex;
+    margin: 0px auto;
 }
 
 .key {
@@ -45,4 +46,9 @@ body {
 
 .black.active {
   background-color: #333;
+}
+
+.output {
+    margin: 10px auto;
+    margin-top: 10vh;
 }

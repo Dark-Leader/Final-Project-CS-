@@ -16,7 +16,7 @@ class Coordinator:
         self.note_to_pitch = note_to_pitch
 
     def process_image(self, file_name, input_folder, output_folder):
-        print(f"processing file: {file_name}")
+        #print(f"processing file: {file_name}")
         original = cv2.imread(f"{input_folder}/{file_name}")
         copy = np.copy(original)
         original_gray = gray(original)
@@ -55,7 +55,7 @@ class Coordinator:
         predictions = self.classifier.detect(data_loader)
         for i, prediction in enumerate(predictions):
             boxes[i].set_prediction(prediction)
-        print(predictions)
+        #print(predictions)
         note_radius = spacing // 2 + first_staff_thickness
         num_groups = len(groups)
         notes = []
@@ -78,8 +78,8 @@ class Coordinator:
                                                                     self.note_to_pitch, cur_time)
                     all_centers.append((centers, i))
                 time_step = new_time
-        for note in notes:
-            print(note.get_name(), note.get_duration())
+        #for note in notes:
+        #    print(note.get_name(), note.get_duration())
         output_file = build_midi_file(notes, time_signature)
 
         for centers, idx in all_centers:
@@ -87,14 +87,15 @@ class Coordinator:
                 copy = self.draw_centers(copy, centers, staff_centers[idx * 5 + 4], spacing)
             except IndexError:
                 pass
-        cv2.imwrite(f"{output_folder}/{file_name}_predictions.png", copy)
+        file_name_no_extension = file_name.split('.')[0]
+        cv2.imwrite(f"{output_folder}/{file_name_no_extension}_predictions.png", copy)
 
-        with open(f"{output_folder}/{file_name.split('.')[0]}.midi", "wb") as f:
+        with open(f"{output_folder}/{file_name_no_extension}.midi", "wb") as f:
             output_file.writeFile(f)
 
     @staticmethod
     def draw_centers(image, centers, last_staff, spacing):
-        print(centers)
+        #print(centers)
         font = cv2.FONT_HERSHEY_SIMPLEX
         font_scale = 0.5
         color = (255, 0, 0)
