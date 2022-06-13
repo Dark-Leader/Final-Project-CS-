@@ -281,7 +281,6 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
                 time_step += duration
                 last_note = note
                 notes.append(note)
-            centers.append((x, y, name))
             continue
         if prediction == "rest_eighth":
             circles = get_note_locations(img, note_radius)
@@ -294,7 +293,6 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             note = Note(duration, prediction, -1, time_step)
             last_note = note
             notes.append(note)
-            centers.append((x,y, prediction))
             continue
         if prediction == "rest_quarter":
             circles = get_note_locations(img, note_radius)
@@ -307,7 +305,6 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             note = Note(duration, prediction, -1, time_step)
             last_note = note
             notes.append(note)
-            centers.append((x,y, prediction))
             continue
         if prediction == "rest_sixteenth":
             circles = get_note_locations(img, note_radius)
@@ -320,7 +317,6 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             note = Note(duration, prediction, -1, time_step)
             last_note = note
             notes.append(note)
-            centers.append((x, y, prediction))
             continue
         if prediction == "whole":
             img = fill_ellipse(img)

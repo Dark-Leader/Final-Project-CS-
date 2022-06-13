@@ -49,6 +49,20 @@ body {
 }
 
 .output {
-    margin: 10px auto;
     margin-top: 10vh;
+    display: flex;
+    justify-content: center;
+}
+
+.output_img {
+    bottom: 10vh;
+    position:fixed;
+}
+
+.download_media {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 5vh;
+    position:fixed;
 }

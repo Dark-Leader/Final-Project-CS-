@@ -6,10 +6,10 @@ import torch
 from algorithm.helper_functions import load_resnet101_model
 from algorithm.Coordinator import Coordinator
 
-TEMPLATE_FOLDER = "templates/"
+TEMPLATE_FOLDER = "templates"
 UPLOAD_FOLDER = "data"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-OUTPUT_FOLDER = "website/static/output"
+OUTPUT_FOLDER = "website\\static\\output"
 
 
 def create_app():
