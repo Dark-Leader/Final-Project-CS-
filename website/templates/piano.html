@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href= "{{ url_for('static',filename='styles/piano.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script>
+        var notesArr = {{ notes|tojson }};
+    </script>
     <script src= "{{ url_for('static',filename='js/piano.js') }}" defer></script>
     <title>Piano</title>
 </head>
@@ -80,7 +83,7 @@
     </div>
     <div id="output" class="output">
         <div id="output_img" class="output_img">
-            <img src="{{ url_for('static',filename='output/{}.png'.format(file_name) ) }}">
+            <img src="{{ url_for('static',filename='output/{}_predictions.png'.format(file_name) ) }}">
         </div>
 
         <div id="download_media" class="download_media">

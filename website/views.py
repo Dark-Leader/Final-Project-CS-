@@ -10,6 +10,11 @@ from website import ALLOWED_EXTENSIONS, coordinator
 views = Blueprint("views", __name__)
 
 
+def allowed_file(file_name):
+    return '.' in file_name and \
+           file_name.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 @views.route("/favicon.ico")
 def favicon():
     return send_from_directory(os.path.join(views.root_path, 'static'),
@@ -37,54 +42,43 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             print(filename)
+            file_name, extension = os.path.splitext(filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             #
             #
-            success = True
             try:
-                coordinator.process_image(filename, app.config['UPLOAD_FOLDER'], app.config['OUTPUT_FOLDER'])
+                notes = coordinator.process_image(filename, app.config['UPLOAD_FOLDER'], app.config['OUTPUT_FOLDER'])
             except Exception as e:
-                success = False
+                print(e.message)
+                return redirect("/")
             #
             # the coordinator did some work on the image
             #
-            if not success:
-                return redirect("/")
-            messages = json.dumps({'status': 'True', 'filename': filename})
-            session['messages'] = messages
+            session['filename'] = file_name
+            session['notes'] = [note.to_json() for note in notes]
             return redirect("/piano")
 
     return redirect("/")
 
 
-def allowed_file(file_name):
-    return '.' in file_name and \
-           file_name.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
 @views.route("/piano", methods=["GET", "POST"])
 def piano():
     if request.method == "GET":
-        if 'messages' not in session:
+        if 'filename' not in session or 'notes' not in session:
             return redirect("/")
-        messages = json.loads(session['messages'])
-        if 'status' not in messages or not messages['status'] or 'filename' not in messages:
-            return redirect("/")
-        filename = messages['filename']
-        print(filename)
-        file_name_no_ext = filename.split('.')[0]
-        full_name = f"{file_name_no_ext}_predictions"
-        print(full_name)
-        return render_template("piano.html", file_name=full_name)
+        filename, notes = session['filename'], session['notes']
+        print(filename, notes)
+        return render_template("piano.html", file_name=filename, notes=notes)
 
 
 @views.route("download_audio/<path:file_name>", methods=["GET"])
 def download_audio(file_name):
     if not file_name:
         return abort(404)
-    full_file_name = file_name[0:file_name.find('_predictions')] + ".midi"
-    print(file_name)
+    file_name = secure_filename(file_name)
+    full_file_name = file_name + ".midi"
+    print(full_file_name)
     base = app.root_path
     middle = app.config['OUTPUT_FOLDER']
     full_path = base + middle[middle.find('\\'):]
@@ -97,7 +91,8 @@ def download_audio(file_name):
 def download_image(file_name):
     if not file_name:
         return abort(404)
-    full_file_name = file_name + ".png"
+    file_name = secure_filename(file_name)
+    full_file_name = file_name + "_predictions.png"
     base = app.root_path
     middle = app.config['OUTPUT_FOLDER']
     full_path = base + middle[middle.find('\\'):]

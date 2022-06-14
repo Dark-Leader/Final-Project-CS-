@@ -217,7 +217,7 @@ def build_midi_file(notes: List[Note], time_signature):
     midi.addTimeSignature(track, time, numerator, 2, 24)
     notes.sort(key=lambda x: x.get_time())
     for note in notes:
-        name, duration, pitch, time_step = note.get_name(), note.get_duration(), note.get_idx(), note.get_time()
+        name, duration, pitch, time_step = note.get_name(), note.get_duration(), note.get_pitch(), note.get_time()
         if pitch == -1: # rest
             continue
         midi.addNote(track, channel, pitch, time_step, duration, volume)
@@ -287,7 +287,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             duration = note_to_beats[prediction]
             num_circles = len(circles)
             if num_circles > 1:
-                mult = 1.5 ** (num_circles-1)
+                mult = 1.5 ** (num_circles - 1)
                 duration *= mult
             duration = note_to_beats[prediction]
             note = Note(duration, prediction, -1, time_step)

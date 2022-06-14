@@ -87,11 +87,13 @@ class Coordinator:
                 copy = self.draw_centers(copy, centers, staff_centers[idx * 5 + 4], spacing)
             except IndexError:
                 pass
+        notes_only = [note for note in notes if (note.get_pitch() != -1)]
         file_name_no_extension = file_name.split('.')[0]
         cv2.imwrite(f"{output_folder}/{file_name_no_extension}_predictions.png", copy)
 
         with open(f"{output_folder}/{file_name_no_extension}.midi", "wb") as f:
             output_file.writeFile(f)
+        return notes_only
 
     @staticmethod
     def draw_centers(image, centers, last_staff, spacing):
