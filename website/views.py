@@ -1,11 +1,13 @@
 import json
+import subprocess
 
 from flask import Blueprint, render_template, send_from_directory, request, redirect, flash, current_app as app, \
     session, url_for, abort
 from werkzeug.utils import secure_filename
 import os
 
-from website import ALLOWED_EXTENSIONS, coordinator
+from website import ALLOWED_EXTENSIONS, coordinator, BEATS_TO_NOTE
+from algorithm.Note import Note
 
 views = Blueprint("views", __name__)
 
@@ -56,7 +58,7 @@ def upload_file():
             # the coordinator did some work on the image
             #
             session['filename'] = file_name
-            session['notes'] = [note.to_json() for note in notes]
+            session['json_notes'] = [note.to_json() for note in notes]
             return redirect("/piano")
 
     return redirect("/")
@@ -65,11 +67,12 @@ def upload_file():
 @views.route("/piano", methods=["GET", "POST"])
 def piano():
     if request.method == "GET":
-        if 'filename' not in session or 'notes' not in session:
+        if 'filename' not in session or 'json_notes' not in session:
             return redirect("/")
-        filename, notes = session['filename'], session['notes']
-        print(filename, notes)
-        return render_template("piano.html", file_name=filename, notes=notes)
+        filename, json_notes = session['filename'], session['json_notes']
+        print(filename, json_notes)
+
+        return render_template("piano.html", file_name=filename, json_notes=json_notes)
 
 
 @views.route("download_audio/<path:file_name>", methods=["GET"])
@@ -77,12 +80,12 @@ def download_audio(file_name):
     if not file_name:
         return abort(404)
     file_name = secure_filename(file_name)
-    full_file_name = file_name + ".midi"
+    full_file_name = file_name + ".wav"
     print(full_file_name)
     base = app.root_path
     middle = app.config['OUTPUT_FOLDER']
-    full_path = base + middle[middle.find('\\'):]
-    if not os.path.isfile(full_path + "\\" + full_file_name):
+    full_path = base + middle[middle.find('/'):]
+    if not os.path.isfile(full_path + "/" + full_file_name):
         return abort(404)
     return send_from_directory(full_path, full_file_name, as_attachment=True)
 
@@ -95,8 +98,8 @@ def download_image(file_name):
     full_file_name = file_name + "_predictions.png"
     base = app.root_path
     middle = app.config['OUTPUT_FOLDER']
-    full_path = base + middle[middle.find('\\'):]
-    if not os.path.isfile(full_path + "\\" + full_file_name):
+    full_path = base + middle[middle.find('/'):]
+    if not os.path.isfile(full_path + "/" + full_file_name):
         return abort(404)
     return send_from_directory(full_path, full_file_name, as_attachment=True)
 

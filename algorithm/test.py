@@ -3,7 +3,7 @@ from math import pi, sqrt
 import os
 import json
 from midiutil import MIDIFile
-from algorithm.helper_functions import round_to_closest_half
+from algorithm.helper_functions import round_to_closest_half, convert_midi_to_mp3
 import math
 
 
@@ -102,30 +102,10 @@ def calculate_note(center, clef, spacing, staffs):
 
 
 def main():
-    beats_to_note = {4: "whole",
-                     2: "half",
-                     1: "quarter",
-                     0.5: "eighth",
-                     0.25: "sixteenth"}
 
-    with open("utils/beats_to_note.json", "w") as fp:
-        json.dump(beats_to_note, fp)
-
-    note_to_beats = {"whole": 4,
-                     "half": 2,
-                     "quarter": 1,
-                     "eighth": 0.5,
-                     "sixteenth": 0.25,
-                     "rest_whole": 4,
-                     "rest_half": 2,
-                     "rest_quarter": 1,
-                     "rest_eighth": 0.5,
-                     "rest_sixteenth": 0.25}
-
-    with open("utils/note_to_beats.json", "w") as fp2:
-        json.dump(note_to_beats, fp2)
-
-
+    folder = "website/static/output"
+    filename = "1"
+    convert_midi_to_mp3(folder, filename)
 
 
 if __name__ == '__main__':

@@ -33,7 +33,7 @@ class Trainer:
             self.model.train()
             train_loss, train_correct = 0, 0
             for batch_idx, (data, labels) in enumerate(train_loader):
-                if self.model == "cuda":
+                if self.device.type == "cuda":
                     data, labels = data.float(), labels.float()
                 data, labels = data.to(self.device), labels.to(self.device)
                 self.optimizer.zero_grad()
@@ -53,7 +53,7 @@ class Trainer:
             valid_correct = 0
 
             for data, target in valid_loader:
-                if self.device == "cuda":
+                if self.device.type == "cuda":
                     data, target = data.float(), target.float()
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
@@ -70,7 +70,7 @@ class Trainer:
         correct = 0
         with torch.no_grad():
             for data, target in test_loader:
-                if self.device == "cuda":
+                if self.device.type == "cuda":
                     data, target = data.float(), target.float()
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
@@ -130,6 +130,7 @@ def main():
     lr = 0.001
     optimizer = optim.Adam(model.parameters(), lr)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(device)
 
     trainer = Trainer(images_folder, model, optimizer, BATCH_SIZE, device)
     epochs = 15

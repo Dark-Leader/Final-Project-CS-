@@ -34,5 +34,11 @@ class Note:
         self.time_step = time_step
 
     def to_json(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True, indent=4)
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
+    @staticmethod
+    def from_json(json_str):
+        obj_dict = json.loads(json_str)
+        note = Note(obj_dict.get('duration', None), obj_dict.get('name', None),
+                    obj_dict.get('pitch', None), obj_dict.get('time_step', None))
+        return note

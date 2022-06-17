@@ -1,4 +1,5 @@
 import os
+import subprocess
 import cv2
 import numpy as np
 import torch
@@ -10,6 +11,7 @@ from torch.utils.data import TensorDataset
 from torch.utils.data.dataloader import DataLoader
 from math import sqrt, pi, floor, ceil
 from midiutil import MIDIFile
+
 
 from algorithm.BoundingBox import BoundingBox
 from algorithm.Note import Note
@@ -214,7 +216,7 @@ def build_midi_file(notes: List[Note], time_signature):
     midi.addTempo(track, time, tempo)
     numerator, _ = time_signature.split("-")
     numerator = int(numerator)
-    midi.addTimeSignature(track, time, numerator, 2, 24)
+    #midi.addTimeSignature(track, time, numerator, 2, 24)
     notes.sort(key=lambda x: x.get_time())
     for note in notes:
         name, duration, pitch, time_step = note.get_name(), note.get_duration(), note.get_pitch(), note.get_time()
@@ -407,22 +409,10 @@ def calculate_note(center, clef, spacing, staffs):
     return note
 
 
-""" helper function to create all the music note audio files from 2nd octave to 6th """
-def make_audio_files(output_folder):
-    note_to_pitch = {}
-    for speed in [0.25, 0.5, 1, 2, 4]:
-        pitch = 95
-        for octave in range(6, 1, -1):
-            for name in ["B", "A#", "A", "G#", "G", "F#", "F", "E", "D#", "D", "C#", "C"]:
-                if name + str(octave) not in note_to_pitch:
-                    note_to_pitch[name + str(octave)] = pitch
-                note = Note(speed, name + str(octave), pitch, 0)
-                midi = build_midi_file([note])
-                with open(f"{output_folder}/{note.get_name()}_{beats_to_note[note.get_duration()]}.mid", 'wb') as binfile:
-                    midi.writeFile(binfile)
-                pitch -= 1
+def convert_midi_to_wav(folder, filename):
+    from midi2audio import FluidSynth
 
-    with open("note_to_pitch.json", "w") as fp:
-        json.dump(note_to_pitch, fp)
+    fs = FluidSynth()
+    fs.midi_to_audio(f'{folder}/{filename}.midi', f'{folder}/{filename}.wav')
 
 

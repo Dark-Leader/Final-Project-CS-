@@ -8,7 +8,7 @@
     <link rel="stylesheet" href= "{{ url_for('static',filename='styles/piano.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <script>
-        var notesArr = {{ notes|tojson }};
+        var notesArr = {{ json_notes|tojson }};
     </script>
     <script src= "{{ url_for('static',filename='js/piano.js') }}" defer></script>
     <title>Piano</title>
@@ -80,7 +80,19 @@
         <div data-note="A6" class="key white"></div>
         <div data-note="A#6" class="key black"></div>
         <div data-note="B6" class="key white"></div>
+
+
+        <audio id="audio_file" src="{{ url_for('static', filename='output/{}.wav'.format(file_name)) }}"></audio>
+
     </div>
+    <div id="controls-container" class="controls-container">
+        <div id="controls" class="controls">
+            <button type="button" id="play_button" class="play_button">Play</button>
+            <button type="button" id="stop_button" class="stop_button">Stop</button>
+            <button type="button" id="reset_button" class="reset_button">Reset</button>
+        </div>
+    </div>
+
     <div id="output" class="output">
         <div id="output_img" class="output_img">
             <img src="{{ url_for('static',filename='output/{}_predictions.png'.format(file_name) ) }}">
@@ -96,6 +108,7 @@
         </div>
     </div>
 </div>
+
 
 </body>
 </html>

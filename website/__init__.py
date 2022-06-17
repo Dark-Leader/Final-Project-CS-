@@ -9,7 +9,17 @@ from algorithm.Coordinator import Coordinator
 TEMPLATE_FOLDER = "templates"
 UPLOAD_FOLDER = "data"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-OUTPUT_FOLDER = "website\\static\\output"
+OUTPUT_FOLDER = "website/static/output"
+
+with open("algorithm/utils/classes.json", "r") as fp:
+    CLASSES = json.load(fp)
+
+with open("algorithm/utils/note_to_pitch.json") as fp2:
+    NOTE_TO_PITCH = json.load(fp2)
+
+with open("algorithm/utils/beats_to_note.json", "r") as fp3:
+    BEATS_TO_NOTE = json.load(fp3)
+
 
 
 def create_app():
@@ -24,15 +34,11 @@ def create_app():
 
 
 def create_coordinator():
-    with open("algorithm/utils/classes.json", "r") as fp:
-        classes = json.load(fp)
-    model = load_resnet101_model("algorithm/ML/model.pt", len(classes))
-    classes["invalid"] = -1
+    model = load_resnet101_model("algorithm/ML/model.pt", len(CLASSES))
+    CLASSES["invalid"] = -1
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
-    with open("algorithm/utils/note_to_pitch.json") as f:
-        note_to_pitch = json.load(f)
-    coord = Coordinator(classes, model, device, note_to_pitch)
+    coord = Coordinator(CLASSES, model, device, NOTE_TO_PITCH)
     return coord
 
 

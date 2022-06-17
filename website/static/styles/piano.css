@@ -67,3 +67,15 @@ body {
     justify-content: space-between;
     column-gap: 20px;
 }
+
+.controls-container {
+    display: flex;
+    justify-content: center;
+}
+
+.controls {
+    display: flex;
+    margin-top: 10vh;
+    justify-content: space-between;
+    column-gap: 20px;
+}

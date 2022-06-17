@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 from algorithm.preprocessing import get_binary_image, rotate_image, skew_angle_hough_transform, get_closer
-from algorithm.helper_functions import gray, get_test_set, process_single_staff_group, get_closest_split, build_midi_file
+from algorithm.helper_functions import gray, get_test_set, process_single_staff_group, get_closest_split, build_midi_file, convert_midi_to_wav
 from algorithm.Classifier import Classifier
 from algorithm.Segmenter import Segmenter
 
@@ -34,14 +34,13 @@ class Coordinator:
 
         image = get_binary_image(image)
         segmenter = Segmenter(image, original)
-        #cv2.imwrite(f"no_staffs_{file}", segmenter.image_without_staffs)
+        #cv2.imwrite(f"no_staffs_{file_name}", segmenter.image_without_staffs)
 
         boxes = segmenter.get_regions_of_interest()
-        #cv2.imwrite(f"temp/{file.split('.')[0]}_no_staffs.png", image_no_staff)
-        #copy = np.copy(original_gray)
-        #for box in boxes:
-        #    box.draw_on_image(copy, color, 2)
-        #cv2.imwrite(f"boxes_{file}", copy)
+        copy2 = np.copy(copy)
+        for box in boxes:
+            box.draw_on_image(copy2, (255, 0, 0), 2)
+        #cv2.imwrite(f"boxes_{file_name}", copy2)
         spacing, thickness = segmenter.spacing, segmenter.thickness
         first_staff = thickness[0]
         first_staff_thickness = first_staff[1] - first_staff[0]
@@ -49,10 +48,11 @@ class Coordinator:
         data_loader = get_test_set(original_gray, boxes)
 
         staff_centers = [(staff[1] + staff[0]) // 2 for staff in thickness]
-        staffs_split = [[staff_centers[i:i + 5] for i in range(0, len(staff_centers), 5)]]
+        staffs_split = [staff_centers[i:i + 5] for i in range(0, len(staff_centers), 5)]
 
         groups = get_closest_split(thickness, boxes, staff_centers)
         predictions = self.classifier.detect(data_loader)
+        print(predictions)
         for i, prediction in enumerate(predictions):
             boxes[i].set_prediction(prediction)
         #print(predictions)
@@ -78,8 +78,8 @@ class Coordinator:
                                                                     self.note_to_pitch, cur_time)
                     all_centers.append((centers, i))
                 time_step = new_time
-        #for note in notes:
-        #    print(note.get_name(), note.get_duration())
+        for note in notes:
+            print(note.get_name(), note.get_duration())
         output_file = build_midi_file(notes, time_signature)
 
         for centers, idx in all_centers:
@@ -93,6 +93,10 @@ class Coordinator:
 
         with open(f"{output_folder}/{file_name_no_extension}.midi", "wb") as f:
             output_file.writeFile(f)
+
+        # convert midi to wav to play it on browser:
+        convert_midi_to_wav(output_folder, file_name_no_extension)
+
         return notes_only
 
     @staticmethod
