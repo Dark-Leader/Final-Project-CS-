@@ -4,14 +4,27 @@ import numpy as np
 
 
 class Classifier:
-
+    '''
+    represents an image classifier for music notes.
+    '''
     def __init__(self, model, classes, device):
+        '''
+        constructor
+        @param model: (torch.nn.Module) trained model.
+        @param classes: (dict) classes of the trained model.
+        @param device: (torch.device) cpu or gpu.
+        '''
         self.class_name_to_idx = classes
         self.idx_to_name = {value: key for key, value in classes.items()}
         self.model = model
         self.device = device
 
     def detect(self, images_loader):
+        '''
+        make predictions on a data loader.
+        @param images_loader: (torch.utils.data.DataLoader) test loader.
+        @return: (list[str]) list of predictions.
+        '''
         res = []
         self.model.eval()
         with torch.no_grad(): # not updating weights
@@ -30,5 +43,10 @@ class Classifier:
         return self.translate(res)
 
     def translate(self, predictions):
+        '''
+        translate index to prediction name.
+        @param predictions: (np.array) predictions array from detect method.
+        @return: (list[str]) list of string predictions
+        '''
         res = [self.idx_to_name[prediction] for prediction in predictions]
         return res

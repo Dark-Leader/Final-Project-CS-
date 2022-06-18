@@ -18,6 +18,9 @@ def get_upsampling_weight(in_channels, out_channels, kernel_size):
     return torch.from_numpy(weight).float()
 
 class FCN8(nn.Module):
+    '''
+    represents a fully CNN neural network -> NOT in use for final project.
+    '''
     def __init__(self, num_classes):
         super(FCN8, self).__init__()
         self.num_classes = num_classes
@@ -83,6 +86,10 @@ class FCN8(nn.Module):
         self._initialize_weights()
 
     def _initialize_weights(self):
+        '''
+        initialize weights of the model.
+        @return: None.
+        '''
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 m.weight.data.zero_()
@@ -95,6 +102,11 @@ class FCN8(nn.Module):
                 m.weight.data.copy_(initial_weight)
 
     def forward(self, x):
+        '''
+        move input through the network.
+        @param x: input image.
+        @return: array of results -> index of highest value is the prediction for the input.
+        '''
         h = x
         h = self.relu1_1(self.conv1_1(h))
         h = self.relu1_2(self.conv1_2(h))

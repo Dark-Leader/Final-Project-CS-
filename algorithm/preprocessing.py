@@ -7,6 +7,11 @@ from scipy.stats import mode
 
 
 def get_binary_image(image: np.ndarray):
+    '''
+    convert grayscale image to binary.
+    @param image: (np.ndarray) input image
+    @return: (np.ndarray) output image.
+    '''
     if len(image.shape) == 3:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     if image.dtype == np.float64:
@@ -16,6 +21,11 @@ def get_binary_image(image: np.ndarray):
 
 
 def check_is_horizontal(image: np.ndarray):
+    '''
+    check if image is not skewed by finding staff lines.
+    @param image: (np.ndarray) input image
+    @return: (bool) true if image is not skewed else false.
+    '''
     rows, cols = image.shape
     for i in range(rows):
         row_sum = image[i].sum() // 255
@@ -25,6 +35,11 @@ def check_is_horizontal(image: np.ndarray):
 
 
 def skew_angle_hough_transform(image):
+    '''
+    calculate skew angle of image.
+    @param image: (np.ndarray) input image.
+    @return:
+    '''
     # convert to edges
     edges = canny(image)
     # Classic straight-line Hough transform between 0.1 - 180 degrees.
@@ -43,6 +58,12 @@ def skew_angle_hough_transform(image):
 
 
 def rotate_image(image, angle):
+    '''
+    rotate image by 'angle' degrees.
+    @param image: (np.ndarray) input image
+    @param angle: (float) angle to rotate.
+    @return: (np.ndarray) output image.
+    '''
     image_center = tuple(np.array(image.shape[1::-1]) / 2)
     rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
     result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
@@ -50,14 +71,20 @@ def rotate_image(image, angle):
 
 
 def zoom_in(img: np.ndarray):
+    '''
+    remove border after image rotation.
+    @param img: (np.ndarray) input image.
+    @return: (np.ndarray) output image.
+    '''
     rows, cols = img.shape
     start_good_row = 0
+    # find first row that is not completely white.
     for i in range(rows):
         if img[i].sum() == 0:
             start_good_row = i
             break
-
-    end_good_row = rows -1
+    # find last row that is not completely white.
+    end_good_row = rows - 1
     for j in range(rows - 1, -1, -1):
         if img[j].sum() == 0:
             end_good_row = j
@@ -66,10 +93,12 @@ def zoom_in(img: np.ndarray):
     start_good_col = 0
     end_good_col = cols -1
     col_sums = img.sum(axis=0)
+    # find first col that is not completely white.
     for col in range(cols):
         if col_sums[col] == 0:
             start_good_col = col
             break
+    # find last col that is not completely white.
     for col in range(cols -1, -1, -1):
         if col_sums[col] == 0:
             end_good_col = col
@@ -78,14 +107,18 @@ def zoom_in(img: np.ndarray):
     rows = list(range(start_good_row, end_good_row))
     cols = list(range(start_good_col, end_good_col))
 
-    #(start_good_row, end_good_row)
-    #print(start_good_col, end_good_col)
+    # create new image based of start_row, end_row, start_col, end_col
     to_select = np.ix_(rows, cols)
     new_img = img[to_select]
     return new_img
 
 
 def get_closer(img):
+    '''
+    remove border after image rotation.
+    @param img: (np.ndarray) input image.
+    @return: (np.ndarray) output image.
+    '''
     rows = []
     cols = []
     for x in range(16):
@@ -107,8 +140,3 @@ def get_closer(img):
     new_img = img[rows[0]:min(img.shape[0], rows[-1]+img.shape[0]//16),
                   cols[0]:min(img.shape[1], cols[-1]+img.shape[1]//16)]
     return new_img
-
-
-
-
-

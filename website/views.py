@@ -6,7 +6,7 @@ from flask import Blueprint, render_template, send_from_directory, request, redi
 from werkzeug.utils import secure_filename
 import os
 
-from website import ALLOWED_EXTENSIONS, coordinator, BEATS_TO_NOTE
+from website import ALLOWED_EXTENSIONS, coordinator, BEATS_TO_NOTE, NOTE_TO_BEATS
 from algorithm.Note import Note
 
 views = Blueprint("views", __name__)
@@ -50,7 +50,7 @@ def upload_file():
             #
             #
             try:
-                notes = coordinator.process_image(filename, app.config['UPLOAD_FOLDER'], app.config['OUTPUT_FOLDER'])
+                notes = coordinator.process_image(filename, app.config['UPLOAD_FOLDER'], app.config['OUTPUT_FOLDER'], NOTE_TO_BEATS)
             except Exception as e:
                 print(e.message)
                 return redirect("/")

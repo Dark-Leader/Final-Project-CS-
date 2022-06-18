@@ -20,6 +20,8 @@ with open("algorithm/utils/note_to_pitch.json") as fp2:
 with open("algorithm/utils/beats_to_note.json", "r") as fp3:
     BEATS_TO_NOTE = json.load(fp3)
 
+with open("algorithm/utils/note_to_beats.json", "r") as fp4:
+    NOTE_TO_BEATS = json.load(fp4)
 
 
 def create_app():
