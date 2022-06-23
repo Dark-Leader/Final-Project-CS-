@@ -1,15 +1,19 @@
 *, *::before, *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
-html {
-    num_octaves = 5
-    num_notes_in_octave = 12
+.white > .key-name {
+    align-self: flex-end;
 }
 
 body {
+    margin: 0 0 0 1vw;
     background-color: #612718;
-    margin: 0;
+    width: 100%;
+}
+
+.wrapper {
+    margin: auto;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -22,14 +26,17 @@ body {
 }
 
 .key {
-  height: calc(var(--width) * 4);
-  width: var(--width);
+    height: calc(var(--width) * 4);
+    width: var(--width);
+    color: black;
+    display: flex;
 }
 
 .white {
-  --width: 2.8vw;
-  background-color: white;
-  border: 1px solid #333;
+    bottom: 0;
+    --width: 2.8vw;
+    background-color: white;
+    border: 1px solid #333;
 }
 
 .white.active {
@@ -37,11 +44,12 @@ body {
 }
 
 .black {
-  --width: 2vw;
-  background-color: black;
-  margin-left: calc(var(--width) / -2);
-  margin-right: calc(var(--width) / -2);
-  z-index: 2;
+    --width: 2vw;
+    background-color: black;
+    margin-left: calc(var(--width) / -2);
+    margin-right: calc(var(--width) / -2);
+    z-index: 2;
+    color: white;
 }
 
 .black.active {

@@ -25,6 +25,9 @@ class Timer {
      * starts playing the melody and animation of the piano.
      */
     start() {
+        if (this.isRunning) {
+            return;
+        }
         this.isRunning = true;
         this.initialize();
         this.audio_file.play();
@@ -69,6 +72,9 @@ class Timer {
      * pauses the melody playback, saving pending timeouts.
      */
     pause() {
+        if (!this.isRunning) {
+            return;
+        }
         this.isRunning = false;
         this.audio_file.pause();
         this.backlog = [];
