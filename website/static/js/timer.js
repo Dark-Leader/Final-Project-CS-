@@ -53,6 +53,20 @@ class Timer {
         }
     }
 
+    getLongestWait() {
+        let max = 0;
+        let curTime = Date.now();
+        for (let i = 0; i < this.timeouts.length; i++) {
+            let curTimeout = this.timeouts[i];
+            let expected = curTimeout[1] + curTimeout[2] * 1000;
+            if (expected - curTime > max) {
+                max = expected - curTime;
+            }
+        }
+        return max;
+    }
+
+
     /**
      * resets the audio file to the beginning, removes all pending timeouts, resets the piano keys to not active state.
      */
@@ -118,7 +132,9 @@ class Timer {
         let note = this.notes[idx];
         let name = note.name;
         let key = window.document.getElementById(name);
-        key.classList.remove('active');
+        if (key != null) {
+            key.classList.remove('active');
+        }
     }
 
     /**
@@ -130,7 +146,9 @@ class Timer {
             return;
         }
         let key = window.document.getElementById(name);
-        key.classList.add('active');
+        if (key != null) {
+            key.classList.add('active');
+        }
     }
 
     /**
@@ -144,8 +162,11 @@ class Timer {
             return;
         }
         if (this.idx >= this.notes.length) {
-            this.done = true;
-            this.reset();
+            let wait = this.getLongestWait();
+            setTimeout(() => {
+                this.reset();
+            }, wait); // call mainloop again in 'updatedDelay' milliseconds.
+            return;
         }
         let curNote = this.notes[this.idx];
         let timeStep = curNote.time_step;

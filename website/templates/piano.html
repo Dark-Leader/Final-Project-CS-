@@ -204,7 +204,7 @@
         </div>
     </div>
 
-    <audio id="audio_file" src="{{ url_for('static', filename='output/{}.wav'.format(file_name)) }}"></audio>
+    <audio id="audio_file" src="{{ url_for('static', filename='output/{}.wav'.format(file_name)) }}" preload="auto"></audio>
     <div id="controls-container" class="controls-container">
         <div id="controls" class="controls">
             <button type="button" id="play_button" class="play_button">Play</button>

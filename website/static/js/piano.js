@@ -1,6 +1,7 @@
 const INTERVAL = 250; // 250ms -> duration of shortest note.
 
 const audio_file = document.getElementById('audio_file'); // get output audio file
+audio_file.load();
 
 function load_notes(notes_arr) {
     /**

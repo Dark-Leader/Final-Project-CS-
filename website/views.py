@@ -1,13 +1,10 @@
-import json
-import subprocess
 
-from flask import Blueprint, render_template, send_from_directory, request, redirect, flash, current_app as app, \
-    session, url_for, abort
+from flask import Blueprint, render_template, send_from_directory, request, redirect, current_app as app, \
+    session, abort
 from werkzeug.utils import secure_filename
 import os
 
-from website import ALLOWED_EXTENSIONS, coordinator, BEATS_TO_NOTE, NOTE_TO_BEATS
-from algorithm.Note import Note
+from website import ALLOWED_EXTENSIONS, coordinator, NOTE_TO_BEATS
 
 views = Blueprint("views", __name__)
 

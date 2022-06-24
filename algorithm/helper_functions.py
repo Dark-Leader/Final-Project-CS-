@@ -304,6 +304,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
     @param time_step: (int) current timeStep in the melody.
     @return: (Tuple[int, str, list[list[int]]]) new timestep, time signature, list of detected note centers.
     '''
+    found_clef = found_time_signature = False
     clef = "sol_clef"
     last_note = None
     time_modifier = "4-4"
@@ -319,11 +320,15 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             continue
         if prediction in ["sol_clef", "fa_clef"]: # found clef
             clef = prediction
+            found_clef = True
             centers.append((x, y, prediction))
             continue
         if prediction in ["4-4", "3-4", "2-4"]: # found time signature.
             time_modifier = prediction
+            found_time_signature = True
             centers.append((x, y, prediction))
+            continue
+        if not found_clef or not found_time_signature:
             continue
         if prediction == "dot": # found dot
             if last_note: # if we already saw a note then it is a dotted note.
@@ -364,6 +369,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
                 duration *= mult
             duration = note_to_beats[prediction]
             note = Note(duration, prediction, -1, time_step)
+            time_step += duration
             last_note = note
             notes.append(note)
             continue
@@ -376,6 +382,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
                 duration *= mult
             duration = note_to_beats[prediction]
             note = Note(duration, prediction, -1, time_step)
+            time_step += duration
             last_note = note
             notes.append(note)
             continue
@@ -388,6 +395,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
                 duration *= mult
             duration = note_to_beats[prediction]
             note = Note(duration, prediction, -1, time_step)
+            time_step += duration
             last_note = note
             notes.append(note)
             continue
@@ -396,7 +404,6 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             is_whole = True
         if prediction == "half": # found half note.
             img = fill_ellipse(img) # fill the ellipse to get better results.
-
         # if we got here -> then the note is whole, half, quarter, eighth, sixteenth
         # need to check duration and find note heads to decide which piano key represents the note.
         circles = get_note_locations(img, note_radius, is_whole)
@@ -415,7 +422,8 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
                 notes.append(note)
                 centers.append((cur_real_x - int(radius), cur_real_y, name))
             elif i > 0: # it is a dot -> so last note is a dotted note.
-                time_step = dotted_note(last_note, time_step)
+                if last_note:
+                    time_step = dotted_note(last_note, time_step)
 
     return time_step, time_modifier, centers
 
@@ -467,7 +475,10 @@ def dotted_note(note, time_step):
     '''
     duration = note.get_duration()
     addition = duration / 2
-    note.set_duration(duration + addition)
+    new_duration = duration + addition
+    if new_duration > 3:
+        return time_step
+    note.set_duration(new_duration)
     return time_step + addition
 
 
@@ -503,11 +514,11 @@ def calculate_note(center, clef, spacing, staffs):
             abs_num_notes -= num_octaves * octave_size
         octave += num_octaves
 
-    if num_jumps < 0: # going down the keys -> going left in the piano.
+    if num_jumps < 0 and abs_num_notes > 0: # going down the keys -> going left in the piano.
         octave -= 1
-        note = note_cycle[-abs_num_notes]
     else: # going up the keys -> going right in the piano.
         note = note_cycle[abs_num_notes]
+    note = note_cycle[-abs_num_notes]
     note += str(octave)
     return note
 
