@@ -516,9 +516,9 @@ def calculate_note(center, clef, spacing, staffs):
 
     if num_jumps < 0 and abs_num_notes > 0: # going down the keys -> going left in the piano.
         octave -= 1
+        note = note_cycle[-abs_num_notes]
     else: # going up the keys -> going right in the piano.
         note = note_cycle[abs_num_notes]
-    note = note_cycle[-abs_num_notes]
     note += str(octave)
     return note
 

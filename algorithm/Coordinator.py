@@ -72,7 +72,6 @@ class Coordinator:
         for i, prediction in enumerate(predictions):
             boxes[i].set_prediction(prediction)
             if prediction == "half" or prediction == "whole":
-                cv2.imwrite(f"temp_{prediction}_{i}.png", boxes[i].image)
                 start_x, start_y = boxes[i].x, boxes[i].y
                 end_x, end_y = start_x + boxes[i].width, start_y + boxes[i].height
                 # cut original image and get sub matrix for the box.
@@ -81,7 +80,8 @@ class Coordinator:
                 new_img = original_gray[max(start_y - offset, 0): min(rows - 1, end_y + offset),
                           max(start_x - offset, 0): min(cols - 1, end_x + offset)]
                 boxes[i].set_img(new_img)
-                cv2.imwrite(f"{prediction}_{i}.png", new_img)
+                boxes[i].x -= offset
+                boxes[i].y -= offset
         note_radius = spacing // 2 + first_staff_thickness  # expected radius of note in the image.
         num_groups = len(groups)
         notes = []  # list of detected notes.
@@ -114,8 +114,8 @@ class Coordinator:
                                                                              cur_time)
                     all_centers.append((centers, i + 1))
                 time_step = new_time
-        # for note in notes: # sanity check
-        #     print(note.get_name(), note.get_duration())
+        for note in notes: # sanity check
+            print(note.get_name(), note.get_duration())
         output_file = build_midi_file(notes)  # create output midi file from the list of notes.
 
         # for each note, draw its name on the output image.
