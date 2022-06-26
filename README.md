@@ -4,7 +4,7 @@ Welcome to NoteRecognition - The app that teaches you how to play the piano!
 
 # How to use the app:
 1. the server needs to run on a linux based system.
-2. create a conda env with the given requirements.txt file.
+2. I created a conda env. you may use the requirements.txt file to create a conda env.
 3. download FluidSynth with the following commands:
 
 sudo apt-get update
