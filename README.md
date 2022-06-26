@@ -8,6 +8,7 @@ Welcome to NoteRecognition - The app that teaches you how to play the piano!
 3. download FluidSynth with the following commands:
 
 sudo apt-get update
+
 sudo apt-get install fluidsynth
 
 4. download the Pytorch model from: https://drive.google.com/file/d/1U-i_oH_MSRE7TMF597jHNevtVyDTGAP0/view?usp=sharing
