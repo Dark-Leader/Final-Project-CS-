@@ -18,7 +18,7 @@ and place it inside the following path: "algorithm/ML"
 you may do as you wish with it - if you want to classify more symbols - e.g support of black piano keys then you will need to add said classes to the dataset.
 
 6. run the app with: "python3 main.py" after activating the conda env (or pip env)
-7. open a browser (I tested with FireFox) and go to "localhost:5000" and upload an image to the server - image of the melody you wish to learn how to play - I provide you with images inside the test images folder.
+7. open a browser (I tested with FireFox) and go to "localhost:5000" and upload an image to the server - image of the melody you wish to learn how to play - I provide you with example images inside the test images folder.
 8. press the play button to see the piano animation and use the play, pause, reset buttons to control the playback and you can download the output image or the output the server made from the detections from the image provided.
 
 
@@ -63,6 +63,8 @@ unsupported notes:
 5. gracenotes.
 
 the app shouldn't crash if you provide an image with said notes but the accuracy won't be high since the model wasn't trained on such symbols so either we ignore them or an inaccurate classification will be given to such symbols.
+
+6. some fonts have an affect on the classification accuracy of the model - some fonts of the '2-4' timeSignature have an affect on the accuracy of the output audio file since it has an effect on the preprocessing stage - the result is that sometimes the melody will start with a rest - after said rest everything is back to normal.
 
 
 Final notes:
