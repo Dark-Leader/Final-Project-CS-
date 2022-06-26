@@ -24,7 +24,9 @@ I made a short video to illustrate how to run it: https://youtu.be/_hcmd1JnRAI
 
 
 supported notes:
+
 you may check the dataset classes to better understand what the model can classify correctly.
+
 1. whole.
 2. half, dotted half.
 3. quarter, dotted quarter.
