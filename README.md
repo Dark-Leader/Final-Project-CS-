@@ -17,7 +17,7 @@ and place it inside the following path: "algorithm/ML"
 
 you may do as you wish with it - if you want to classify more symbols - e.g support of black piano keys then you will need to add said classes to the dataset.
 
-6. run the flask app with: "python3 main.py" after activating the conda env (or pip env)
+6. run the app with: "python3 main.py" after activating the conda env (or pip env)
 7. go to "localhost:5000" and upload an image to the server - image of the melody you wish to learn how to play - I provide you with images inside the test images folder.
 8. press the play button to see the piano animation and use the play, pause, reset buttons to control the playback and you can download the output image or the output the server made from the detections from the image provided.
 
