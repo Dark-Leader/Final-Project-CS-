@@ -20,3 +20,4 @@ you may do as you wish with it - if you want to classify more symbols - e.g supp
 8. press the play button to see the piano animation and use the play, pause, reset buttons to control the playback and you can download the output image or the output the server made from the detections from the image provided.
 
 
+I made a short video to illustrate how to run it: https://youtu.be/_hcmd1JnRAI
