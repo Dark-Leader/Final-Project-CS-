@@ -59,3 +59,11 @@ unsupported notes:
 5. gracenotes.
 
 the app shouldn't crash if you provide an image with said notes but the accuracy won't be high since the model wasn't trained on such symbols so either we ignore them or an inaccurate classification will be given to such symbols.
+
+
+Final notes:
+1. The app was designed for beginners so currently there is no support for black piano pieces - need to update the dataset and update the algorithm to handle them.
+
+2. The app was designed for short melodys - meaning single row - some work has been done to support longer melodys with multiple rows but it wasn't tested enough and it still has some bugs.
+
+3. The app supports Treble and Bass clefs.
