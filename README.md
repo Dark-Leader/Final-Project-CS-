@@ -43,8 +43,14 @@ unsupported notes:
 ![ApplicationFrameHost_wiL0vyEo6i](https://user-images.githubusercontent.com/53357564/175818110-27633545-c20a-475a-8737-b691807f9ee5.png)
 
 
-2. conneted notes with different durations e.g: 
+2. conneted notes with different durations e.g:
+
 ![ApplicationFrameHost_nzoqKMfENV](https://user-images.githubusercontent.com/53357564/175818138-5bf9c811-066e-469f-b3c8-8eaff2430627.png)
 
 
 3. notes longer than a full rest.
+4. tie notes:
+
+
+![ApplicationFrameHost_8AAiscKcNR](https://user-images.githubusercontent.com/53357564/175818233-179de638-9a14-4ab8-a826-80078e43911a.png)
+5. gracenotes.
