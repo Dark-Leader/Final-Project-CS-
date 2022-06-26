@@ -21,3 +21,30 @@ you may do as you wish with it - if you want to classify more symbols - e.g supp
 
 
 I made a short video to illustrate how to run it: https://youtu.be/_hcmd1JnRAI
+
+
+supported notes:
+you may check the dataset classes to better understand what the model can classify correctly.
+1. whole.
+2. half, dotted half.
+3. quarter, dotted quarter.
+4. eighth, dotted eighth.
+5. sixteenth, dotted sixteenth.
+6. rest whole.
+7. rest half.
+8. rest quarter, dotted quarter rest.
+9. rest eighth, dotted rest eighth.
+10. rest sixteenth, dotted rest sixteenth.
+
+unsupported notes:
+1. black piano keys - sharp or 'b': 
+
+![ApplicationFrameHost_YF5FxQpRXq](https://user-images.githubusercontent.com/53357564/175818046-26df9651-f78b-465e-a2da-5b8b8f95eafe.png)
+![ApplicationFrameHost_wiL0vyEo6i](https://user-images.githubusercontent.com/53357564/175818110-27633545-c20a-475a-8737-b691807f9ee5.png)
+
+
+2. conneted notes with different durations e.g: 
+![ApplicationFrameHost_nzoqKMfENV](https://user-images.githubusercontent.com/53357564/175818138-5bf9c811-066e-469f-b3c8-8eaff2430627.png)
+
+
+3. notes longer than a full rest.
