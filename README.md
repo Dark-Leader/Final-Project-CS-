@@ -53,4 +53,7 @@ unsupported notes:
 
 
 ![ApplicationFrameHost_8AAiscKcNR](https://user-images.githubusercontent.com/53357564/175818233-179de638-9a14-4ab8-a826-80078e43911a.png)
+
 5. gracenotes.
+
+the app shouldn't crash if you provide an image with said notes but the accuracy won't be high since the model wasn't trained on such symbols so either we ignore them or an inaccurate classification will be given to such symbols.
