@@ -39,6 +39,8 @@ you may check the dataset classes to better understand what the model can classi
 8. rest quarter, dotted quarter rest.
 9. rest eighth, dotted rest eighth.
 10. rest sixteenth, dotted rest sixteenth.
+11. Treble, Bass Clefs.
+12. 2-4, 3-4, 4-4 timeSignatures.
 
 unsupported notes:
 1. black piano keys - sharp or 'b': 
