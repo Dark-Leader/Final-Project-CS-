@@ -62,9 +62,9 @@ unsupported notes:
 
 5. gracenotes.
 
-the app shouldn't crash if you provide an image with said notes but the accuracy won't be high since the model wasn't trained on such symbols so either we ignore them or an inaccurate classification will be given to such symbols.
-
 6. some fonts have an affect on the classification accuracy of the model - some fonts of the '2-4' timeSignature have an affect on the accuracy of the output audio file since it has an effect on the preprocessing stage - the result is that sometimes the melody will start with a rest - after said rest everything is back to normal.
+
+the app shouldn't crash if you provide an image with said notes but the accuracy won't be high since the model wasn't trained on such symbols so either we ignore them or an inaccurate classification will be given to such symbols.
 
 
 Final notes:
