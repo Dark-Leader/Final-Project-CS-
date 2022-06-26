@@ -11,7 +11,7 @@ sudo apt-get update
 
 sudo apt-get install fluidsynth
 
-4. download the Pytorch model from: https://drive.google.com/file/d/1U-i_oH_MSRE7TMF597jHNevtVyDTGAP0/view?usp=sharing
+4. download the trained Pytorch model from: https://drive.google.com/file/d/1U-i_oH_MSRE7TMF597jHNevtVyDTGAP0/view?usp=sharing
 and place it inside the following path: "algorithm/ML"
 6. optional - if you wish the train the model differently - I classified manually around 3000 images and made the following dataset: https://drive.google.com/drive/folders/13XoVZcMSgTMSWky8C1QHETadLqnW6v1S?usp=sharing
 you may do as you wish with it - if you want to classify more symbols - e.g support of black piano keys then you will need to add said classes to the dataset.
