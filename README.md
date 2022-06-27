@@ -13,7 +13,7 @@ sudo apt-get install fluidsynth
 
 4. download the trained Pytorch model from: https://drive.google.com/file/d/1U-i_oH_MSRE7TMF597jHNevtVyDTGAP0/view?usp=sharing
 and place it inside the following path: "algorithm/ML"
-6. optional - if you wish to train a custom model - I classified manually around 3000 images and made the following dataset: https://drive.google.com/drive/folders/13XoVZcMSgTMSWky8C1QHETadLqnW6v1S?usp=sharing
+5. optional - if you wish to train a custom model - I classified manually around 3000 images and made the following dataset: https://drive.google.com/drive/folders/13XoVZcMSgTMSWky8C1QHETadLqnW6v1S?usp=sharing
 
 you may do as you wish with it - if you want to classify more symbols - e.g support of black piano keys then you will need to add said classes to the dataset AND update the algorithm that reconstructs the melody to handle said new classes AND update the 'classes.json' file from 'algorithm/util'
 
@@ -64,12 +64,14 @@ unsupported notes:
 
 6. some fonts have an affect on the classification accuracy of the model - some fonts of the '2-4' timeSignature have an affect on the accuracy of the output audio file since it has an effect on the preprocessing stage - the result is that sometimes the melody will start with a rest - after said rest everything is back to normal.
 
+7. The app supports notes from the 2nd octave to the 6th octave - The vast majority of all melodies are played with these keys. If you wish to add more octaves you will have to update some files from "algorithm/util" to support such notes in the dictionaries there AND update the piano in the output page to render more keys.
+
 the app shouldn't crash if you provide an image with said notes but the accuracy won't be high since the model wasn't trained on such symbols so either we ignore them or an inaccurate classification will be given to such symbols.
 
 
 Final notes:
 1. The app was designed for beginners so currently there is no support for black piano pieces - need to update the dataset and update the algorithm to handle them.
 
-2. The app was designed for short melodys - meaning single row - some work has been done to support longer melodys with multiple rows but it wasn't tested enough and it still has some bugs.
+2. The app was designed for short melodies - meaning single row - some work has been done to support longer melodies with multiple rows but it wasn't tested enough and it still has some bugs.
 
 3. The app supports Treble and Bass clefs.
