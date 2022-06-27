@@ -54,7 +54,7 @@ unsupported notes:
 ![ApplicationFrameHost_nzoqKMfENV](https://user-images.githubusercontent.com/53357564/175818138-5bf9c811-066e-469f-b3c8-8eaff2430627.png)
 
 
-3. notes longer than a full rest.
+3. notes longer than a whole rest.
 4. tie notes:
 
 
