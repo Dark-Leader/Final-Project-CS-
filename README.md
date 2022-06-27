@@ -15,7 +15,7 @@ sudo apt-get install fluidsynth
 and place it inside the following path: "algorithm/ML"
 6. optional - if you wish to train a custom model - I classified manually around 3000 images and made the following dataset: https://drive.google.com/drive/folders/13XoVZcMSgTMSWky8C1QHETadLqnW6v1S?usp=sharing
 
-you may do as you wish with it - if you want to classify more symbols - e.g support of black piano keys then you will need to add said classes to the dataset.
+you may do as you wish with it - if you want to classify more symbols - e.g support of black piano keys then you will need to add said classes to the dataset AND update the algorithm that reconstructs the melody to handle said new classes AND update the 'classes.json' file from 'algorithm/util'
 
 6. run the app with: "python3 main.py" after activating the conda env (or pip env)
 7. open a browser (I tested with FireFox) and go to "localhost:5000" and upload an image to the server - image of the melody you wish to learn how to play - I provide you with example images inside the test images folder.
