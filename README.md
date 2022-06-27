@@ -69,8 +69,8 @@ the app shouldn't crash if you provide an image with said notes (so far - unsupp
 7. The app supports notes from the 2nd octave to the 6th octave - The vast majority of all melodies are played with these keys. If you wish to add more octaves you will have to update some files from "algorithm/util" to support such notes in the dictionaries there AND update the piano in the output page to render more keys.
 
 
-Final notes:
-1. The app was designed for beginners so currently there is no support for black piano pieces - need to update the dataset and update the algorithm to handle them.
+Final key points:
+1. The app was designed for beginners so currently there is no support for black piano pieces - need to update the dataset, model and update the algorithm to handle them.
 
 2. The app was designed for short melodies - meaning single row - some work has been done to support longer melodies with multiple rows but it wasn't tested enough and it still has some bugs.
 
