@@ -64,9 +64,9 @@ unsupported notes:
 
 6. some fonts have an affect on the classification accuracy of the model - some fonts of the '2-4' timeSignature have an affect on the accuracy of the output audio file since it has an effect on the preprocessing stage - the result is that sometimes the melody will start with a rest - after said rest everything is back to normal.
 
-7. The app supports notes from the 2nd octave to the 6th octave - The vast majority of all melodies are played with these keys. If you wish to add more octaves you will have to update some files from "algorithm/util" to support such notes in the dictionaries there AND update the piano in the output page to render more keys.
+the app shouldn't crash if you provide an image with said notes (so far - unsupported notes 1 - 6) but the accuracy won't be high since the model wasn't trained on such symbols so either we ignore them or an inaccurate classification will be given to such symbols.
 
-the app shouldn't crash if you provide an image with said notes but the accuracy won't be high since the model wasn't trained on such symbols so either we ignore them or an inaccurate classification will be given to such symbols.
+7. The app supports notes from the 2nd octave to the 6th octave - The vast majority of all melodies are played with these keys. If you wish to add more octaves you will have to update some files from "algorithm/util" to support such notes in the dictionaries there AND update the piano in the output page to render more keys.
 
 
 Final notes:
