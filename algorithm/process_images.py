@@ -1,7 +1,9 @@
 import cv2
 import sys
 import os
+
 from algorithm.preprocessing import get_binary_image
+from config import helper
 
 
 def main():
@@ -11,7 +13,7 @@ def main():
     '''
     input_folder, output = sys.argv[1], sys.argv[2]
     parent_dir = os.path.dirname(os.path.abspath(__file__))
-    new_size = (224, 224)
+    new_size = tuple(helper['model_image_input_size'])
     count = 0
     for folder in os.listdir(input_folder):
         new_folder_path = f"{parent_dir}/{output}/{folder}"

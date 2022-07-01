@@ -14,6 +14,7 @@ from midiutil import MIDIFile
 from algorithm.BoundingBox import BoundingBox
 from algorithm.Note import Note
 from algorithm.preprocessing import get_binary_image
+from config import helper
 
 
 def get_note_locations(image, spacing, is_whole=False):
@@ -51,12 +52,13 @@ def get_note_locations(image, spacing, is_whole=False):
     # filter contours on area and draw good ones as black filled on white background
     for cntr in cntrs:
         area = cv2.contourArea(cntr)
+        # best results with this range -> area of a dot is at least the value of spacing and area of whole is at most
+        # value of (spacing * 2.2) ** 2
         if spacing < area < (spacing * 2.2) ** 2:
             # get centroid
             M = cv2.moments(cntr)
             cx = M["m10"] / M["m00"]
             cy = M["m01"] / M["m00"]
-            #pt = "(" + str(cx) + "," + str(cy) + ")"
             # fit ellipse
             ellipse = cv2.fitEllipse(cntr)
             (x, y), (minor_axis, major_axis), angle = ellipse
@@ -83,9 +85,10 @@ def get_test_set(original_image: np.ndarray, boxes: List[BoundingBox]):
     @return: (torch.utils.data.DataLoader) test set data loader.
     '''
     res = []
-    offset = 2
+    offset = helper['allowed_offset']
+
     rows, cols = original_image.shape
-    new_size = (224, 224) # model input size.
+    new_size = tuple(helper['model_image_input_size']) # get input image size for model.
 
     boxes.sort(key=lambda b: b.x)
     for i, box in enumerate(boxes):
@@ -117,8 +120,11 @@ def load_resnet101_model(path, num_classes):
     @param num_classes: number of classes.
     @return: (torch.nn.Module) output model.
     '''
-    model = models.resnet101(False, (1, 224, 224), num_classes=num_classes)
-    model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+    input_size = helper['model_input_size']
+    in_channels, out_channels, kernel_size, stride, padding = helper['model_config']
+    trained = False
+    model = models.resnet101(trained, input_size, num_classes=num_classes)
+    model.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=stride, padding=padding, bias=False)
     checkpoint = torch.load(path)
     # update weights to saved weights.
     model.load_state_dict(checkpoint)
@@ -152,7 +158,7 @@ def get_horizontal_image(image: np.ndarray):
     @return: (np.ndarray) output image.
     '''
     rows, cols = image.shape
-    horizontal_size = cols // 20
+    horizontal_size = cols // 20 # best results
     # Create structure element for extracting horizontal lines through morphology operations
     horizontalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, (horizontal_size, 1))
     # Apply morphology operations
@@ -170,7 +176,7 @@ def get_vertical_image(image: np.ndarray):
     @return: (np.ndarray) output image.
     '''
     rows, cols = image.shape
-    verticalsize = rows // 40
+    verticalsize = rows // 40 # best results
     # Create structure element for extracting vertical lines through morphology operations
     verticalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, (1, verticalsize))
     # Apply morphology operations
@@ -367,7 +373,6 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             if num_circles > 1: # dotted rest -> need to increase duration.
                 mult = 1.5 ** (num_circles - 1)
                 duration *= mult
-            duration = note_to_beats[prediction]
             note = Note(duration, prediction, -1, time_step)
             time_step += duration
             last_note = note
@@ -380,7 +385,6 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             if num_circles > 0: # dotted rest -> need to increase duration.
                 mult = 1.5 ** num_circles
                 duration *= mult
-            duration = note_to_beats[prediction]
             note = Note(duration, prediction, -1, time_step)
             time_step += duration
             last_note = note
@@ -393,7 +397,6 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             if num_circles > 2: # dotted rest -> need to increase duration.
                 mult = 1.5 ** (num_circles - 2)
                 duration *= mult
-            duration = note_to_beats[prediction]
             note = Note(duration, prediction, -1, time_step)
             time_step += duration
             last_note = note
@@ -476,7 +479,7 @@ def dotted_note(note, time_step):
     duration = note.get_duration()
     addition = duration / 2
     new_duration = duration + addition
-    if new_duration > 3:
+    if new_duration > 3: # don't support any note longer than a dotted half except rest - but we don't support dotted rest.
         return time_step
     note.set_duration(new_duration)
     return time_step + addition
@@ -494,7 +497,7 @@ def calculate_note(center, clef, spacing, staffs):
     x, y = center
     note_cycle = "CDEFGAB"
     octave_size = len(note_cycle)
-    octave = 4 # base octave is 4 -> center of the piano.
+    octave = helper['octave'] # base octave is 4 -> center of the piano.
     if clef == "sol_clef":
         base_height = staffs[-1] + spacing # C4 is below the last staff line.
     else:

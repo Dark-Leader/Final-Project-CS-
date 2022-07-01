@@ -6,6 +6,7 @@ from algorithm.helper_functions import gray, get_test_set, process_single_staff_
     build_midi_file, convert_midi_to_wav
 from algorithm.Classifier import Classifier
 from algorithm.Segmenter import Segmenter
+from config import coor
 
 
 class Coordinator:
@@ -40,11 +41,11 @@ class Coordinator:
         copy = np.copy(original)
         original_gray = gray(original)
         image = cv2.bitwise_not(original_gray)
-        image = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 15, -2)
+        image = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 15, -2) # best results
 
         angle = skew_angle_hough_transform(image)
         if abs(angle) >= 1:  # attempt to correct the img skew angle by rotating the image
-            angle += angle / 10
+            angle += angle / coor['offset'] # best results
             image = rotate_image(image, angle)
             image = get_closer(image)
             original = rotate_image(original, angle)
@@ -71,11 +72,11 @@ class Coordinator:
         print(predictions)
         for i, prediction in enumerate(predictions):
             boxes[i].set_prediction(prediction)
-            if prediction == "half" or prediction == "whole":
+            if prediction in ["half", "whole"]:
                 start_x, start_y = boxes[i].x, boxes[i].y
                 end_x, end_y = start_x + boxes[i].width, start_y + boxes[i].height
                 # cut original image and get sub matrix for the box.
-                offset = 10
+                offset = coor['offset']
                 rows, cols = len(original_gray), len(original_gray[0])
                 new_img = original_gray[max(start_y - offset, 0): min(rows - 1, end_y + offset),
                           max(start_x - offset, 0): min(cols - 1, end_x + offset)]
@@ -97,7 +98,7 @@ class Coordinator:
         else:
             # complex case -> more than one group of 5 staffs
             # split into groups of 2 consecutive staff groups.
-            for i in range(0, num_groups - 1, 2):
+            for i in range(0, num_groups, 2):
                 # process the notes and calculate which note is being played at which timeStep.
                 cur_time = time_step
                 new_time, time_signature, centers = process_single_staff_group(staffs_split[i], groups[i],
@@ -121,6 +122,7 @@ class Coordinator:
         # for each note, draw its name on the output image.
         for centers, idx in all_centers:
             try:
+                # draw prediction for each note in relation to each staff lines group
                 copy = self.draw_centers(copy, centers, staff_centers[idx * 5 + 4], spacing)
             except IndexError:
                 pass
@@ -131,7 +133,7 @@ class Coordinator:
         with open(f"{output_folder}/{file_name_no_extension}.midi", "wb") as f:
             output_file.writeFile(f)  # save midi file
 
-        # convert midi to wav to play it on browser:
+        # convert midi to wav to play it on browser
         convert_midi_to_wav(output_folder, file_name_no_extension)
 
         return notes_only
@@ -147,9 +149,9 @@ class Coordinator:
         @return: (np.ndarray) output image.
         '''
         font = cv2.FONT_HERSHEY_SIMPLEX
-        font_scale = 0.5
-        color = (255, 0, 0)
-        thickness = 2
+        font_scale = coor['font_scale']
+        color = coor['font_color']
+        thickness = coor['font_thickness']
         for center in centers:
             x, y, name = center
             y_level = last_staff + spacing

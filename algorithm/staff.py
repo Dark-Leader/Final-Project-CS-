@@ -3,6 +3,8 @@ from typing import List, Tuple
 from collections import defaultdict
 import cv2
 
+from config import st
+
 
 def get_staffs(image: np.ndarray, skew=False):
     '''
@@ -15,9 +17,9 @@ def get_staffs(image: np.ndarray, skew=False):
     staffs = []
     for i in range(rows):
         row_sum = image[i].sum() // 255
-        if row_sum >= 0.8 * cols: # sum of row is above threshold
+        if row_sum >= st['staff_thresh'] * cols: # sum of row is above threshold
             staffs.append(i)
-        elif skew and row_sum >= 0.6 * cols: # if image was skewed we allow lower threshold.
+        elif skew and row_sum >= st['skew_staff_thresh'] * cols: # if image was skewed we allow lower threshold.
             staffs.append(i)
     return staffs
 
@@ -112,11 +114,13 @@ def remove_staff_lines(image: np.ndarray):
 
     cnts = cv2.findContours(detected_lines, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
+    color = (255, 255, 255)
     for c in cnts:
-        cv2.drawContours(image, [c], -1, (255, 255, 255), 2)
+        cv2.drawContours(image, [c], -1, color, 2)
 
     # Repair image
-    repair_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 6))
+    kernel_size = tuple(st['kernel_size']) # best results
+    repair_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, kernel_size)
     result = 255 - cv2.morphologyEx(255 - image, cv2.MORPH_CLOSE, repair_kernel, iterations=1)
     result = cv2.bitwise_not(result)
 

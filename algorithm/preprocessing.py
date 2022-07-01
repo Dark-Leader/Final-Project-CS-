@@ -5,6 +5,8 @@ from skimage.transform import rotate
 from skimage.feature import canny, corner_harris
 from scipy.stats import mode
 
+from config import pre
+
 
 def get_binary_image(image: np.ndarray):
     '''
@@ -29,7 +31,7 @@ def check_is_horizontal(image: np.ndarray):
     rows, cols = image.shape
     for i in range(rows):
         row_sum = image[i].sum() // 255
-        if row_sum <= 0.15 * cols:
+        if row_sum <= pre['horizontal_thresh'] * cols:
             return True
     return False
 

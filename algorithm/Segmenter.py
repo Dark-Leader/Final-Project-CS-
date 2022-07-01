@@ -4,6 +4,7 @@ import numpy as np
 from algorithm.BoundingBox import BoundingBox
 from algorithm.preprocessing import get_binary_image
 from algorithm.staff import get_staffs, calculate_thickness_and_spacing, remove_staff_lines
+from config import helper
 
 
 class Segmenter:
@@ -39,7 +40,7 @@ class Segmenter:
         # since the process of removing staff lines is prone to removing parts of a note
         # we want to allow error of up to max_error in the BFS recursion.
         max_error = max(x[1] - x[0] for x in self.thickness) * 2.5
-        offset = 2 # encapsulate in a box plus 2 pixels margin of error.
+        offset = helper['allowed_offset'] # encapsulate in a box plus offset pixels margin of error.
         for row in range(rows):
             for col in range(cols):
                 if copy[row][col] != 0: # not black pixel.
