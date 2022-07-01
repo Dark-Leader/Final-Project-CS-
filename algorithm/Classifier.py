@@ -27,6 +27,7 @@ class Classifier:
         '''
         res = []
         self.model.eval()
+        PROBABILITY_THRESHOLD = 0.5
         with torch.no_grad(): # not updating weights
             for data, target in images_loader:
                 data = data.to(self.device)
@@ -34,7 +35,7 @@ class Classifier:
                 probs = nn.functional.softmax(output, dim=1).cpu().numpy()[0]
                 prediction = output.max(1, keepdim=True)[1] # get predictions
                 prob = probs[prediction]
-                if prob < 0.5: # in case we get a symbol which the model didn't train on we want to ignore it.
+                if prob < PROBABILITY_THRESHOLD: # in case we get a symbol which the model didn't train on we want to ignore it.
                     res.append(np.array([[-1]], dtype=np.int64))
                 else:
                     res.append(prediction.cpu().numpy()) # move predictions from GPU memory to CPU.

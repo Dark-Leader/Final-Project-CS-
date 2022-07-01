@@ -9,6 +9,8 @@ import sys
 import torchvision.models as models
 import time
 
+from config import helper
+
 
 class Trainer:
     '''

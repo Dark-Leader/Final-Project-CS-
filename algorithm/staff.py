@@ -3,7 +3,8 @@ from typing import List, Tuple
 from collections import defaultdict
 import cv2
 
-from config import st
+
+MIN_PIXEL_VALUE, MAX_PIXEL_VALUE = 0, 255
 
 
 def get_staffs(image: np.ndarray, skew=False):
@@ -15,11 +16,14 @@ def get_staffs(image: np.ndarray, skew=False):
     '''
     rows, cols = image.shape
     staffs = []
+    STAFF_THRESHOLD = 0.8
+    SKEW_STAFF_THRESHOLD = 0.6
+
     for i in range(rows):
-        row_sum = image[i].sum() // 255
-        if row_sum >= st['staff_thresh'] * cols: # sum of row is above threshold
+        row_sum = image[i].sum() // MAX_PIXEL_VALUE
+        if row_sum >= STAFF_THRESHOLD * cols: # sum of row is above threshold
             staffs.append(i)
-        elif skew and row_sum >= st['skew_staff_thresh'] * cols: # if image was skewed we allow lower threshold.
+        elif skew and row_sum >= SKEW_STAFF_THRESHOLD * cols: # if image was skewed we allow lower threshold.
             staffs.append(i)
     return staffs
 
@@ -106,24 +110,26 @@ def remove_staff_lines(image: np.ndarray):
 
     copy = np.copy(image)
     gray = cv2.cvtColor(copy, cv2.COLOR_BGR2GRAY)
-    thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
-    # Remove horizontal
-    remove_kernel = tuple(st['remove_kernel'])
-    horizontal_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, remove_kernel)
+    thresh = cv2.threshold(gray, MIN_PIXEL_VALUE, MAX_PIXEL_VALUE, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+
+    # Remove horizontal lines
+    REMOVE_KERNEL_SIZE = (100, 1) # best results
+    horizontal_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, REMOVE_KERNEL_SIZE)
     detected_lines = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, horizontal_kernel, iterations=2)
 
     cnts = cv2.findContours(detected_lines, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
-    color = tuple(st['color'])
-    thickness = st['thickness']
+    COLOR = (255, 255, 255) # Draw detected contours in white since image is in binary -> black and white.
+    CNT_THICKNESS = 2
+    DRAW_ALL_CONTOURS_FLAG = -1
     for c in cnts:
-        cv2.drawContours(image, [c], -1, color, thickness)
+        cv2.drawContours(image, [c], DRAW_ALL_CONTOURS_FLAG, COLOR, CNT_THICKNESS)
 
     # Repair image
-    kernel_size = tuple(st['kernel_size']) # best results
-    repair_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, kernel_size)
-    result = 255 - cv2.morphologyEx(255 - image, cv2.MORPH_CLOSE, repair_kernel, iterations=1)
+    REPAIR_KERNEL_SIZE = (1, 6) # best results
+    repair_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, REPAIR_KERNEL_SIZE)
+    result = MAX_PIXEL_VALUE - cv2.morphologyEx(MAX_PIXEL_VALUE - image, cv2.MORPH_CLOSE, repair_kernel, iterations=1)
     result = cv2.bitwise_not(result)
 
     return result

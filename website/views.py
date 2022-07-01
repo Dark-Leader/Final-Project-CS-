@@ -4,7 +4,9 @@ from flask import Blueprint, render_template, send_from_directory, request, redi
 from werkzeug.utils import secure_filename
 import os
 
-from website import ALLOWED_EXTENSIONS, coordinator, NOTE_TO_BEATS
+from website import ALLOWED_EXTENSIONS, coordinator, NOTE_TO_BEATS, NOTE_TO_PITCH
+
+KEYS = NOTE_TO_PITCH.keys()
 
 views = Blueprint("views", __name__)
 
@@ -69,7 +71,7 @@ def piano():
         filename, json_notes = session['filename'], session['json_notes']
         print(filename, json_notes)
 
-        return render_template("piano.html", file_name=filename, json_notes=json_notes)
+        return render_template("piano.html", file_name=filename, json_notes=json_notes, keys=KEYS)
 
 
 @views.route("download_audio/<path:file_name>", methods=["GET"])

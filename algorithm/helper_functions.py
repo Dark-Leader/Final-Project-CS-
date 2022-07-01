@@ -9,12 +9,15 @@ from torch.utils.data import TensorDataset
 from torch.utils.data.dataloader import DataLoader
 from math import sqrt, pi, floor, ceil
 from midiutil import MIDIFile
+from midi2audio import FluidSynth
 
 
 from algorithm.BoundingBox import BoundingBox
 from algorithm.Note import Note
 from algorithm.preprocessing import get_binary_image
 from config import helper
+
+MAX_PIXEL_VALUE = 255
 
 
 def get_note_locations(image, spacing, is_whole=False):
@@ -29,19 +32,22 @@ def get_note_locations(image, spacing, is_whole=False):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # threshold
-    thresh = cv2.threshold(image, 128, 255, cv2.THRESH_BINARY)[1]
+    WHITE_THRESH = 128 # any pixel above this value will be converted to white -> 255 else black -> 0.
+    thresh = cv2.threshold(image, WHITE_THRESH, MAX_PIXEL_VALUE, cv2.THRESH_BINARY)[1]
 
     # do morphology remove horizontal lines
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 5))
+    HORIZONTAL_KERNEL_SIZE = (1, 5) # best results
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, HORIZONTAL_KERNEL_SIZE)
     lines1 = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel, iterations=1)
 
     # do morphology to remove vertical lines
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 1))
+    VERTICAL_KERNEL_SIZE = (5, 1) # best results
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, VERTICAL_KERNEL_SIZE)
     lines2 = cv2.morphologyEx(lines1, cv2.MORPH_CLOSE, kernel, iterations=1)
-    lines2 = cv2.threshold(lines2, 128, 255, cv2.THRESH_BINARY)[1]
+    lines2 = cv2.threshold(lines2, WHITE_THRESH, MAX_PIXEL_VALUE, cv2.THRESH_BINARY)[1]
 
     # invert lines2
-    lines2 = 255 - lines2
+    lines2 = MAX_PIXEL_VALUE - lines2
 
     # get contours
     cntrs = cv2.findContours(lines2, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -85,23 +91,27 @@ def get_test_set(original_image: np.ndarray, boxes: List[BoundingBox]):
     @return: (torch.utils.data.DataLoader) test set data loader.
     '''
     res = []
-    offset = helper['allowed_offset']
+    # we want to expand the image by ERROR_OFFSET pixel in each direction
+    # for best results just in case we missed a part of a note.
+    ERROR_OFFSET = 2
 
     rows, cols = original_image.shape
-    new_size = tuple(helper['model_image_input_size']) # get input image size for model.
+    NEW_SIZE_KEY = 'model_image_input_size'
+    new_size = tuple(helper[NEW_SIZE_KEY]) # get input image size for model.
 
     boxes.sort(key=lambda b: b.x)
     for i, box in enumerate(boxes):
         start_x, start_y = box.x, box.y
         end_x, end_y = start_x + box.width, start_y + box.height
         # cut original image and get sub matrix for the box.
-        new_img = original_image[max(start_y - offset, 0): min(rows - 1, end_y + offset), max(start_x - offset, 0): min(cols - 1, end_x + offset)]
+        new_img = original_image[max(start_y - ERROR_OFFSET, 0): min(rows - 1, end_y + ERROR_OFFSET),
+                                 max(start_x - ERROR_OFFSET, 0): min(cols - 1, end_x + ERROR_OFFSET)]
         box.set_img(np.copy(new_img))
 
         bin_image = get_binary_image(new_img)
         scaled_image = cv2.resize(bin_image, new_size) # resize image to fit model input size.
 
-        normalized_img = scaled_image / 255.0
+        normalized_img = scaled_image / MAX_PIXEL_VALUE
         normalized_img = np.expand_dims(normalized_img, 0)
         res.append(normalized_img)
     # create data loader.
@@ -120,8 +130,10 @@ def load_resnet101_model(path, num_classes):
     @param num_classes: number of classes.
     @return: (torch.nn.Module) output model.
     '''
-    input_size = helper['model_input_size']
-    in_channels, out_channels, kernel_size, stride, padding = helper['model_config']
+    MODEL_INPUT_SIZE_KEY = 'model_input_size'
+    input_size = helper[MODEL_INPUT_SIZE_KEY]
+    MODEL_CONFIG_KEY = 'model_config'
+    in_channels, out_channels, kernel_size, stride, padding = helper[MODEL_CONFIG_KEY]
     trained = False
     model = models.resnet101(trained, input_size, num_classes=num_classes)
     model.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=stride, padding=padding, bias=False)
@@ -158,9 +170,11 @@ def get_horizontal_image(image: np.ndarray):
     @return: (np.ndarray) output image.
     '''
     rows, cols = image.shape
-    horizontal_size = cols // 20 # best results
+    HORIZONTAL_LINE_SCALE = 20 # best results
+    horizontal_size = cols // HORIZONTAL_LINE_SCALE # best results
     # Create structure element for extracting horizontal lines through morphology operations
-    horizontalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, (horizontal_size, 1))
+    kernel_size = (horizontal_size, 1) # best results
+    horizontalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, kernel_size)
     # Apply morphology operations
     horizontal = cv2.erode(image, horizontalStructure)
     horizontal = cv2.dilate(horizontal, horizontalStructure)
@@ -176,9 +190,11 @@ def get_vertical_image(image: np.ndarray):
     @return: (np.ndarray) output image.
     '''
     rows, cols = image.shape
-    verticalsize = rows // 40 # best results
+    VERTICAL_LINE_SCALE = 40 # best results
+    verticalsize = rows // VERTICAL_LINE_SCALE # best results
     # Create structure element for extracting vertical lines through morphology operations
-    verticalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, (1, verticalsize))
+    kernel_size = (1, verticalsize) # best results
+    verticalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, kernel_size)
     # Apply morphology operations
     vertical = cv2.erode(image, verticalStructure)
     vertical = cv2.dilate(vertical, verticalStructure)
@@ -186,6 +202,7 @@ def get_vertical_image(image: np.ndarray):
 
     vertical = get_binary_image(vertical)
     return vertical
+
 
 def improve_img(image: np.ndarray):
     '''
@@ -199,15 +216,16 @@ def improve_img(image: np.ndarray):
     @return: (np.ndarray) output image.
     '''
     # Step 1
-    edges = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, \
+    edges = cv2.adaptiveThreshold(image, MAX_PIXEL_VALUE, cv2.ADAPTIVE_THRESH_MEAN_C, \
                                   cv2.THRESH_BINARY, 3, -2)
     # Step 2
-    kernel = np.ones((2, 2), np.uint8)
+    SHAPE = (2, 2)
+    kernel = np.ones(SHAPE, np.uint8)
     edges = cv2.dilate(edges, kernel)
     # Step 3
     smooth = np.copy(image)
     # Step 4
-    smooth = cv2.blur(smooth, (2, 2))
+    smooth = cv2.blur(smooth, SHAPE)
     # Step 5
     (rows, cols) = np.where(edges != 0)
     image[rows, cols] = smooth[rows, cols]
@@ -223,9 +241,13 @@ def get_closest_split(staffs, boxes: List[BoundingBox], staff_centers) -> List[L
     @return: (list[list[BoundingBox]]) output list of list of boxes -> each box goes to the closest staff group.
     '''
     num_staffs = len(staffs)
-    arrays = [[] for _ in range(num_staffs // 5)]
+    NUM_STAFFS_IN_BLOCK = 5
+    MID_STAFF_IDX_IN_BLOCK = 2
+
+    arrays = [[] for _ in range(num_staffs // NUM_STAFFS_IN_BLOCK)]
     n = len(staff_centers)
-    block_centers = staff_centers[2:n:5] # get middle staff line in each staff line group.
+    block_centers = staff_centers[MID_STAFF_IDX_IN_BLOCK: n: NUM_STAFFS_IN_BLOCK] # get middle staff line in each staff line group.
+
     for box in boxes:
         center = box.center
         x, y = center
@@ -253,7 +275,7 @@ def fill_ellipse(image):
     _, contour, hier = cv2.findContours(des, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
 
     for cnt in contour:
-        cv2.drawContours(des, [cnt], 0, 255, -1)
+        cv2.drawContours(des, [cnt], 0, MAX_PIXEL_VALUE, -1)
     res = cv2.bitwise_not(des)
     return res
 
@@ -266,20 +288,19 @@ def build_midi_file(notes: List[Note]):
     @return: (MIDIFile) output midi file.
     '''
     midi = MIDIFile(1)
-    track = 0
-    channel = 0
-    time = 0  # In beats
-    # duration = 1  # In beats
-    tempo = 60  # In BPM
-    volume = 100  # 0-127, as per the MIDI standard
-    midi.addTempo(track, time, tempo)
+    TRACK = 0
+    CHANNEL = 0
+    TIME = 0  # In beats
+    TEMPO = 60  # In BPM
+    VOLUME = 100  # 0-127, as per the MIDI standard
+    midi.addTempo(TRACK, TIME, TEMPO)
 
     notes.sort(key=lambda x: x.get_time())
     for note in notes:
         name, duration, pitch, time_step = note.get_name(), note.get_duration(), note.get_pitch(), note.get_time()
         if pitch == -1: # skip rest
             continue
-        midi.addNote(track, channel, pitch, time_step, duration, volume)
+        midi.addNote(TRACK, CHANNEL, pitch, time_step, duration, VOLUME)
     return midi
 
 
@@ -314,6 +335,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
     clef = "sol_clef"
     last_note = None
     time_modifier = "4-4"
+    DOT_MULT = 1.5
     centers = []
     for i, box in enumerate(detections):
         img = box.image
@@ -371,7 +393,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             duration = note_to_beats[prediction]
             num_circles = len(circles)
             if num_circles > 1: # dotted rest -> need to increase duration.
-                mult = 1.5 ** (num_circles - 1)
+                mult = DOT_MULT ** (num_circles - 1) # each dot after note increases duration by 50%.
                 duration *= mult
             note = Note(duration, prediction, -1, time_step)
             time_step += duration
@@ -383,7 +405,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             duration = note_to_beats[prediction]
             num_circles = len(circles)
             if num_circles > 0: # dotted rest -> need to increase duration.
-                mult = 1.5 ** num_circles
+                mult = DOT_MULT ** num_circles # each dot after note increases duration by 50%.
                 duration *= mult
             note = Note(duration, prediction, -1, time_step)
             time_step += duration
@@ -395,7 +417,7 @@ def process_single_staff_group(staffs, detections, spacing, note_radius, notes, 
             duration = note_to_beats[prediction]
             num_circles = len(circles)
             if num_circles > 2: # dotted rest -> need to increase duration.
-                mult = 1.5 ** (num_circles - 2)
+                mult = DOT_MULT ** (num_circles - 2) # each dot after note increases duration by 50%.
                 duration *= mult
             note = Note(duration, prediction, -1, time_step)
             time_step += duration
@@ -497,8 +519,9 @@ def calculate_note(center, clef, spacing, staffs):
     x, y = center
     note_cycle = "CDEFGAB"
     octave_size = len(note_cycle)
-    octave = helper['octave'] # base octave is 4 -> center of the piano.
-    if clef == "sol_clef":
+    OCTAVE = 4 # base octave is 4 -> center of the piano.
+    BASE_CLEF = "sol_clef"
+    if clef == BASE_CLEF:
         base_height = staffs[-1] + spacing # C4 is below the last staff line.
     else:
         base_height = staffs[0] - spacing # C4 is above the top staff line.
@@ -515,14 +538,14 @@ def calculate_note(center, clef, spacing, staffs):
             abs_num_notes += num_octaves * octave_size
         else:
             abs_num_notes -= num_octaves * octave_size
-        octave += num_octaves
+        OCTAVE += num_octaves
 
     if num_jumps < 0 and abs_num_notes > 0: # going down the keys -> going left in the piano.
-        octave -= 1
+        OCTAVE -= 1
         note = note_cycle[-abs_num_notes]
     else: # going up the keys -> going right in the piano.
         note = note_cycle[abs_num_notes]
-    note += str(octave)
+    note += str(OCTAVE)
     return note
 
 
@@ -534,7 +557,6 @@ def convert_midi_to_wav(folder, filename):
     @param filename: (str) midi file name.
     @return: None.
     '''
-    from midi2audio import FluidSynth
 
     fs = FluidSynth()
     fs.midi_to_audio(f'{folder}/{filename}.midi', f'{folder}/{filename}.wav')

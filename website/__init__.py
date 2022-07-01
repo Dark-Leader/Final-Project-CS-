@@ -29,8 +29,9 @@ def create_app():
 
 
 def create_coordinator():
-    model = load_resnet101_model(settings['model_path'], len(CLASSES))
-    CLASSES["invalid"] = -1
+    MODEL_LOCATION_PATH_KEY = 'model_path'
+    model = load_resnet101_model(settings[MODEL_LOCATION_PATH_KEY], len(CLASSES))
+    CLASSES["invalid"] = -1 # for notes the model wasn't trained to classify.
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
     coord = Coordinator(CLASSES, model, device, NOTE_TO_PITCH)

@@ -2,6 +2,7 @@ import torch.nn as nn
 import numpy as np
 import torch
 
+
 def get_upsampling_weight(in_channels, out_channels, kernel_size):
     """Make a 2D bilinear kernel suitable for upsampling"""
     factor = (kernel_size + 1) // 2
