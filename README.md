@@ -15,11 +15,12 @@ sudo apt-get install fluidsynth
 and place it inside the following path: "algorithm/ML"
 5. optional - if you wish to train a custom model - I classified manually around 3000 images and made the following dataset: https://drive.google.com/drive/folders/13XoVZcMSgTMSWky8C1QHETadLqnW6v1S?usp=sharing
 
-you may do as you wish with it - if you want to classify more symbols - e.g support of black piano keys then you will need to add said classes to the dataset AND update the algorithm that reconstructs the melody to handle said new classes AND update the 'classes.json' file from 'algorithm/util'
+you may do as you wish with it - if you want to classify more symbols - e.g support of black piano keys then you will need to add said classes to the dataset AND update the algorithm that reconstructs the melody to handle said new classes AND you will to update the 'config.yaml' file.
 
 6. run the app with: "python3 main.py" after activating the conda env (or pip env)
-7. open a browser (I tested with FireFox) and go to "localhost:5000" and upload an image to the server - image of the melody you wish to learn how to play - I provide you with example images inside the test images folder.
-8. press the play button to see the piano animation and use the play, pause, reset buttons to control the playback and you can download the output image or the output the server made from the detections from the image provided.
+7. open a browser (I tested with FireFox) and go to "localhost:5000" and upload an image to the server - image of the melody you wish to learn how to play - I provide you with example images inside the 'test images' folder.
+8. press the play button to see the piano animation and use the play, pause, reset buttons to control the playback.
+you can download the output image or the output audio file the server produced based on the image provided by the user.
 
 
 I made a short video to illustrate how to run it: https://youtu.be/_hcmd1JnRAI
@@ -62,16 +63,17 @@ unsupported notes:
 
 5. gracenotes.
 
-6. some fonts have an affect on the classification accuracy of the model - some fonts of the '2-4' timeSignature have an affect on the accuracy of the output audio file since it has an effect on the preprocessing stage - the result is that sometimes the melody will start with a rest - after said rest everything is back to normal.
+6. some fonts have an affect on the classification accuracy of the model - for example:
+some fonts of the '2-4' timeSignature have an affect on the accuracy of the output audio file since it has an effect on the preprocessing stage.
 
 the app shouldn't crash if you provide an image with said notes (so far - unsupported notes 1 - 6) but the accuracy won't be high since the model wasn't trained on such symbols so either we ignore them or an inaccurate classification will be given to such symbols.
 
-7. The app supports notes from the 2nd octave to the 6th octave - The vast majority of all melodies are played with these keys. If you wish to add more octaves you will have to update some files from "algorithm/util" to support such notes in the dictionaries there AND update the piano in the output page to render more keys.
+7. The app supports notes from the 2nd octave to the 6th octave - The vast majority of all melodies are played with these keys. If you wish to add more octaves you will have to update the 'config.yaml' file to support such notes in the dictionaries there.
 
 
 Final key points:
-1. The app was designed for beginners so currently there is no support for black piano pieces - need to update the dataset, model and update the algorithm to handle them.
+1. The app was designed for beginners so currently there is no support for black piano pieces - need to update the dataset, model, 'config.yaml' file and update the algorithm to handle them.
 
 2. The app was designed for short melodies - meaning single row - some work has been done to support longer melodies with multiple rows but it wasn't tested enough and it still has some bugs.
 
-3. The app supports Treble and Bass clefs.
+3. The app supports both Treble and Bass clefs.
