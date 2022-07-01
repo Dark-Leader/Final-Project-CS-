@@ -1,0 +1,134 @@
+classes:
+  2-4: 0
+  3-4: 1
+  4-4: 2
+  barline: 3
+  dot: 4
+  eighth: 5
+  fa_clef: 6
+  half: 7
+  quarter: 8
+  rest: 9
+  rest_eighth: 10
+  rest_quarter: 11
+  rest_sixteenth: 12
+  sixteenth: 13
+  sol_clef: 14
+  whole: 15
+
+
+beats_to_note:
+  4: "whole"
+  2: "half"
+  1: "quarter"
+  0.5: "eighth"
+  0.25: "sixteenth"
+
+
+note_to_beats:
+  whole: 4.0
+  half: 2.0
+  quarter: 1.0
+  eighth: 0.5
+  sixteenth: 0.25
+  rest_whole: 4
+  rest_half: 2
+  rest_quarter: 1
+  rest_eighth: 0.5
+  rest_sixteenth: 0.25
+
+
+note_to_pitch:
+  B6: 95
+  A#6: 94
+  A6: 93
+  G#6": 92
+  G6: 91
+  F#6: 90
+  F6: 89
+  E6: 88
+  D#6: 87
+  D6: 86
+  C#6: 85
+  C6: 84
+  B5: 83
+  A#5: 82
+  A5: 81
+  G#5: 80
+  G5: 79
+  F#5: 78
+  F5: 77
+  E5: 76
+  D#5: 75
+  D5: 74
+  C#5: 73
+  C5: 72
+  B4: 71
+  A#4: 70
+  A4: 69
+  G#4: 68
+  G4: 67
+  F#4: 66
+  F4: 65
+  E4: 64
+  D#4: 63
+  D4: 62
+  C#4: 61
+  C4: 60
+  B3: 59
+  A#3: 58
+  A3: 57
+  G#3: 56
+  G3: 55
+  F#3: 54
+  F3: 53
+  E3: 52
+  D#3: 51
+  D3: 50
+  C#3: 49
+  C3: 48
+  B2: 47
+  A#2: 46
+  A2: 45
+  G#2: 44
+  G2: 43
+  F#2: 42
+  F2: 41
+  E2: 40
+  D#2: 39
+  D2: 38
+  C#2: 37
+  C2: 36
+
+
+model_path: "algorithm/ML/model.pt"
+
+
+helper_functions:
+  model_image_input_size: [224, 224]
+  model_input_size: [1, 224, 224]
+  model_config: [1, 64, 7, 2, 3]
+  allowed_offset: 2
+  octave: 4
+
+
+preprocessing:
+  horizontal_thresh: 0.2
+
+
+staff:
+  skew_staff_thresh: 0.6
+  staff_thresh: 0.8
+  kernel_size: [1,6]
+  remove_kernel: [100, 1]
+  color: [255, 255, 255]
+  thickness: 2
+
+
+coordinator:
+  offset: 10
+  font_scale: 0.5
+  font_color: [255, 0, 0]
+  font_thickness: 2
+
+

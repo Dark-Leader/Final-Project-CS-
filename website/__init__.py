@@ -1,6 +1,5 @@
 from flask import Flask
 import os
-import json
 import torch
 
 from algorithm.helper_functions import load_resnet101_model
@@ -16,7 +15,6 @@ CLASSES = settings['classes']
 NOTE_TO_PITCH = settings['note_to_pitch']
 BEATS_TO_NOTE = settings['beats_to_note']
 NOTE_TO_BEATS = settings['note_to_beats']
-helper_constants = settings['helper_functions']
 
 
 def create_app():
